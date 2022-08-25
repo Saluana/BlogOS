@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model Settings {
+  title        String @default("Blog")
+  description  String @default("A newly created blog")
+  url          String @default("http://localhost:3000")
+  email        String @unique
+  timezone     String @default("America/Vancouver")
+  dateFormat   String @default("YYYY-MM-DD")
+  language     String @default("en")
+  postsPerPage Int    @default(10)
+}
+
+model Category {
+  id          Int    @id @default(autoincrement())
+  title       String @unique
+  count       Int    @default(0)
+  description String @default("")
+  link        String @unique
+  parent      String
+  posts       Post[]
+}
+
+model Author {
+  id               Int      @id @default(autoincrement())
+  username         String   @unique
+  firstName        String   @default("")
+  lastName         String   @default("")
+  email            String   @unique
+  registrationDate DateTime @default(now())
+  roles            String   @default("user")
+  password         String
+  avatarUrl        String   @default("")
+  description      String   @default("")
+  posts            Post[]
+}
+
+model Post {
+  id               Int      @id @default(autoincrement())
+  title            String   @unique
+  date             DateTime @default(now())
+  link             String?
+  description      String   @default("")
+  lastUpdated      DateTime @default(now())
+  status           String   @default("draft")
+  content          String   @default("")
+  author           Author   @relation(fields: [authorId], references: [id])
+  authorId         Int
+  featuredImageUrl String   @default("")
+  category         Category @relation(fields: [categoryId], references: [id])
+  categoryId       Int
+  tags             String[] @default([])
+}
