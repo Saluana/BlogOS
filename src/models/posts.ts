@@ -135,4 +135,10 @@ async function deletePost (id: PostId): Promise<Post | ErrorMessage> {
     return deletedPost ? post as Post : "Error deleting post" as ErrorMessage
 }
 
-export { getAllPosts, getRangeOfPosts, getPostById, createPost, updatePost, deletePost }
+async function getPostCount(): Promise<number | ErrorMessage> {
+    const count = await prisma.post.count()
+
+    return count ? count : "No posts found." as ErrorMessage
+}
+
+export { getAllPosts, getRangeOfPosts, getPostById, createPost, updatePost, deletePost, getPostCount }
