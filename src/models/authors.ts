@@ -87,17 +87,42 @@ async function getAuthorsPosts(authorId: number): Promise<Author | ErrorMessage>
     return authorsPosts ? authorsPosts : "An error occurred" as ErrorMessage
 }
 
-async function updateAuthorsEmail(authorId: number, newEmail: string): Promise<Author | ErrorMessage> {
-    const author = await prisma.author.update({
+async function updateAuthor(author: Author): Promise<Author | ErrorMessage> {
+    const oldAuthor = await prisma.author.findFirst({
         where: {
-            id: authorId
-        },
-        data: {
-            email: newEmail
+            id: author.id
         }
     })
 
-    return author ? author : "An error occurred" 
+    if (!oldAuthor) {
+        return "No author found with that id."
+    }
+
+    if (author.hasOwnProperty('password') && typeof author.password === 'string' && author.password.length > 6) {
+        const hashedPassword = await bcrypt.hash(author.password, 10)
+        author.password = hashedPassword
+    } else {
+        return "Password must be at least 6 characters long"
+    }
+
+    const updatedAuthor = await prisma.author.update({
+        where: {
+            id: author.id
+        },
+        data: {
+            username: author.username || oldAuthor.username,
+            firstName: author.firstName || oldAuthor.firstName,
+            lastName: author.lastName || oldAuthor.lastName,
+            roles: author.roles || oldAuthor.roles,
+            email: author.email || oldAuthor.email,
+            password: author.password || oldAuthor.password,
+            registrationDate: author.registrationDate || oldAuthor.registrationDate,
+            avatarUrl: author.avatarUrl || oldAuthor.avatarUrl,
+            description: author.description || oldAuthor.description,
+        }
+    })
+
+    return updatedAuthor ? updatedAuthor : "An error occurred"
 }
 
 export default {
@@ -105,5 +130,5 @@ export default {
     getAuthorById,
     createAuthor,
     getAuthorsPosts,
-    updateAuthorsEmail
+    updateAuthor
 }
