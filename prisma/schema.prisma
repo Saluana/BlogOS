@@ -41,6 +41,7 @@ model Author {
   avatarUrl        String   @default("")
   description      String   @default("")
   posts            Post[]
+  pages            Page[]
 }
 
 model Post {
@@ -58,4 +59,19 @@ model Post {
   category         Category @relation(fields: [categoryId], references: [id])
   categoryId       Int
   tags             String[] @default([])
+}
+
+model Page {
+  id               Int      @id @default(autoincrement())
+  date             DateTime @default(now())
+  link             String   @unique
+  lastUpdated      DateTime @default(now())
+  status           String   @default("draft")
+  title            String
+  content          String   @default("")
+  author           Author   @relation(fields: [authorId], references: [id])
+  authorId         Int
+  featuredImageUrl String   @default("")
+  menuOrder        Int      @default(autoincrement())
+  meta             String   @default("{}")
 }

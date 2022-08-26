@@ -1,18 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
-import { Post } from './posts';
-
-export interface Category {
-   id?: number;
-   title?: string;
-   count?: number;
-   description?: string;
-   link?: string;
-   parent?: string;
-   posts?: Post[]; 
-}
-
-type ErrorMessage = string;
+import { Post, ErrorMessage, Category } from './types/types';
 
 async function createCategory (category: Category): Promise<Category | ErrorMessage> {
     if (!category.title) {

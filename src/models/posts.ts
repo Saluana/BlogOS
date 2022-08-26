@@ -1,38 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
-import { Author } from './authors';
-
-export interface Post {
-    id: number
-    title?: string
-    date?: Date
-    link?: string
-    description?: string
-    lastUpdated?: Date
-    status?: string
-    content?: string
-    author?: Author
-    authorId?: number
-    featuredImageUrl?: string
-    category?: string
-    categoryId?: number
-    tags?: string[]
-}
-
-interface NewPost {
-    title: string
-    description?: string
-    content?: string
-    authorId: number
-    categoryId: number
-    tags?: string[]
-    link?: string
-    featuredImageUrl?: string
-}
-
-type PostId = number;
-
-type ErrorMessage = string
+import { Post, NewPost, ErrorMessage, PostId} from './types/types'
 
 async function getAllPosts (): Promise<Post[] | ErrorMessage> {
     let allPosts = await prisma.post.findMany()

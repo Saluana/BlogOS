@@ -1,19 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
-
-export interface SiteSettings {
-    id?: number
-    title?: string
-    description?: string
-    url?: string
-    email: string
-    timezone?: string
-    language?: string
-    dateFormat?: string
-    postsPerPage?: number
-}
-
-type ErrorMessage = string;
+import { SiteSettings, ErrorMessage } from './types/types';
 
 async function createSite (email: string): Promise<SiteSettings | ErrorMessage> {
     const newSettings = await prisma.settings.create({

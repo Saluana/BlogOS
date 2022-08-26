@@ -2,23 +2,7 @@ import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import validator from 'validator'
 const prisma = new PrismaClient()
-
-export interface Author {
-    id: number
-    username?: string
-    firstName?: string
-    lastName?: string
-    roles? : string
-    email?: string
-    password?: string
-    registrationDate?: Date
-    avatarUrl?: string
-    description?: string
-    link? : string
-    posts?: unknown[]
-}
-
-type ErrorMessage = string
+import {Author, ErrorMessage} from './types/types'
 
 function excludePassword(author: Author): Author {
     if (author.hasOwnProperty('password')) {
