@@ -28,6 +28,11 @@ export interface Author {
     posts?: unknown[]
 }
 
+export interface JWTPayload extends Author {
+    iat: number;
+    iss: string;
+}
+
 export interface Category {
     id?: number;
     title?: string;
@@ -64,6 +69,7 @@ export interface NewPost {
     tags?: string[]
     link?: string
     featuredImageUrl?: string
+    status?: string
 }
 
 export interface SiteSettings {

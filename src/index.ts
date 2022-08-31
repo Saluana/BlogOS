@@ -5,6 +5,9 @@ const port = process.env.SERVER_PORT || 3001;
 
 app.use(express.json())
 
+import authentication from "./routes/authentication"; app.use("/api/auth", authentication);
+import posts from "./routes/posts"; app.use("/api/posts", posts);
+
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
 })

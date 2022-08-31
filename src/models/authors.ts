@@ -32,9 +32,23 @@ async function getAuthorById (id: number, excludeUsersPassword: boolean = true):
 
     if (excludeUsersPassword && author) {
     return excludePassword(author)
-    } else {
+    } 
+
     return author ? author : "No author found with that id."
-    }
+}
+
+async function getAuthorByEmail(email: string, excludeUsersPassword: boolean = true): Promise<Author | ErrorMessage> {
+    const author = await prisma.author.findFirst({
+        where: {
+            email
+        }
+    })
+
+    if (excludeUsersPassword && author) {
+    return excludePassword(author)
+    } 
+    
+    return author ? author : "No author found with that email." as ErrorMessage
 }
 
 async function createAuthor (username: string, email: string, password: string, ): Promise<Author | ErrorMessage> {
@@ -109,10 +123,11 @@ async function updateAuthor(author: Author): Promise<Author | ErrorMessage> {
     return updatedAuthor ? updatedAuthor : "An error occurred"
 }
 
-export default {
+export {
     getAllAuthors,
     getAuthorById,
     createAuthor,
     getAuthorsPosts,
-    updateAuthor
+    updateAuthor,
+    getAuthorByEmail
 }

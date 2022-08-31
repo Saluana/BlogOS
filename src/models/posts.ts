@@ -28,6 +28,16 @@ async function getPostById (id: PostId): Promise<Post | ErrorMessage> {
     return post ? post as Post : "No post found with that id." as ErrorMessage
 }
 
+async function getPostByLink (link: string): Promise<Post | ErrorMessage> {
+    const post = await prisma.post.findFirst({
+        where: {
+            link
+        }
+    })
+
+    return post ? post as Post : "No post found with that link." as ErrorMessage
+}
+
 async function createPost (post: NewPost): Promise<NewPost | ErrorMessage> {
     if (post.title.length < 1) {
         return "Title must be at least 1 character long"
@@ -49,6 +59,7 @@ const newPost = await prisma.post.create({
         tags: post.tags || [],
         link: post.link || post.title.replace(/\s/g, '-'),
         featuredImageUrl: post.featuredImageUrl || "",
+        status: post.status || "draft",
     }
 })
 
@@ -109,4 +120,4 @@ async function getPostCount(): Promise<number | ErrorMessage> {
     return count ? count : "No posts found." as ErrorMessage
 }
 
-export { getAllPosts, getRangeOfPosts, getPostById, createPost, updatePost, deletePost, getPostCount }
+export { getAllPosts, getRangeOfPosts, getPostById, getPostByLink, createPost, updatePost, deletePost, getPostCount }

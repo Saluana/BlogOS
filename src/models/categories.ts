@@ -105,12 +105,6 @@ async function getPostsByCategory (id: number): Promise<Post[] | ErrorMessage> {
     return posts ? posts as Post[] : "No posts found." as ErrorMessage
 }
 
-async function main () {
-    const category = await getAllCategories()
-
-    console.log(category)
-}
-main()
 export default {
     createCategory,
     getAllCategories,
