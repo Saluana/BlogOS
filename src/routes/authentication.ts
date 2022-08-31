@@ -21,10 +21,6 @@ function setPayload (author: Author): JWTPayload {
     return payload
 }
 
-function setExpirationTime (startTime: number) {
-    return startTime + 2592000000;
-}
-
 router.post('/new-author', async (req, res) => {
     const { username, email, password } = req.body;
 

@@ -1,6 +1,7 @@
 import {NewPost, Post, ErrorMessage} from '../models/types/types';
 
 /* --- POST FILTERS --- */
+//Filter requests for new posts
 export function filterNewPostReq(requestBody: object): NewPost | ErrorMessage {
     const allowedKeys = ['title', 'description', 'content', 'authorId', 'categoryId', 'tags', 'link', 'featuredImageUrl', 'status'];
     const filteredBody = {};
@@ -15,6 +16,7 @@ export function filterNewPostReq(requestBody: object): NewPost | ErrorMessage {
     return filteredBody ? filteredBody as NewPost : "Invalid post." as ErrorMessage;
 }
 
+//Filter requests for updating posts
 export function filterUpdatePostReq(requestBody: object): Post | ErrorMessage {
     const filteredPost = filterNewPostReq(requestBody);
     if (typeof filteredPost === "string") {
