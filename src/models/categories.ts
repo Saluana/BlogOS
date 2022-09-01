@@ -75,7 +75,7 @@ async function updateCategory (category: Category): Promise<Category | ErrorMess
     return updatedCategory as Category || "Error updating category." as ErrorMessage
 }
 
-async function removeCategory (id: number): Promise<Category | ErrorMessage> {
+async function removeCategory (id: number, removePosts: boolean = false): Promise<Category | ErrorMessage> {
     const category = await prisma.category.findFirst({
         where: {
             id
@@ -85,8 +85,47 @@ async function removeCategory (id: number): Promise<Category | ErrorMessage> {
     if (!category) {
         return "No category found with that id." as ErrorMessage
     }
-    
-    const removedCategory = await prisma.category.delete({
+
+    const uncategorized = await prisma.category.findFirst({
+        where: {
+            title: "Uncategorized"
+        }
+    })
+
+    if (uncategorized) {
+        await prisma.post.updateMany({
+            where: {
+                categoryId: id
+            },
+            data: {
+                categoryId: uncategorized.id
+            }
+        })
+    } else {
+        const newUncategorized = await prisma.category.create({
+            data: {
+                title: "Uncategorized",
+                description: "Uncategorized posts",
+                link: "uncategorized",
+                parent: ""
+            }
+        })
+
+        const updatedPosts = await prisma.post.updateMany({
+            where: {
+                categoryId: id
+            },
+            data: {
+                categoryId: newUncategorized.id
+            }
+        })
+
+        if (!updatedPosts) {
+            return "Something went wrong moving the posts." as ErrorMessage
+        }
+    }
+
+    var removedCategory = await prisma.category.delete({
         where: {
             id
         }
@@ -105,7 +144,7 @@ async function getPostsByCategory (id: number): Promise<Post[] | ErrorMessage> {
     return posts ? posts as Post[] : "No posts found." as ErrorMessage
 }
 
-export default {
+export {
     createCategory,
     getAllCategories,
     getCategoryById,

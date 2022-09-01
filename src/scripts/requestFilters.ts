@@ -1,4 +1,4 @@
-import {NewPost, Post, ErrorMessage} from '../models/types/types';
+import {NewPost, Post, ErrorMessage, Category} from '../models/types/types';
 
 /* --- POST FILTERS --- */
 //Filter requests for new posts
@@ -24,4 +24,18 @@ export function filterUpdatePostReq(requestBody: object): Post | ErrorMessage {
     }
 
     return filteredPost as Post;
+}
+
+/* --- CATEGORY FILTERS --- */
+export function filterNewCategoryReq(requestBody: object): Category | ErrorMessage {
+    const allowedKeys = ['title', 'description', 'link', 'parent'];
+    const filteredBody = {};
+    Object.keys(requestBody).forEach(key => {
+        if (allowedKeys.includes(key)) {
+            filteredBody[key as keyof object] = requestBody[key as keyof object];
+        }
+    })
+    if (!filteredBody.hasOwnProperty('title')) return "Title is required.";
+
+    return filteredBody ? filteredBody as Category : "Invalid category." as ErrorMessage;
 }

@@ -7,6 +7,7 @@ app.use(express.json())
 
 import authentication from "./routes/authentication"; app.use("/api/auth", authentication);
 import posts from "./routes/posts"; app.use("/api/posts", posts);
+import categories from "./routes/categories"; app.use("/api/categories", categories);
 
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);

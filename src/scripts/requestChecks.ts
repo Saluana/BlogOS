@@ -1,6 +1,6 @@
 import { getPostById } from '../models/posts';
 
-export async function isAuthor (authorId: number, PostId: number): Promise<boolean> {
+export async function isAuthorOfPost (authorId: number, PostId: number): Promise<boolean> {
     try {
     const post = await getPostById(PostId);
     if (typeof post === "string") return false;
@@ -10,3 +10,4 @@ export async function isAuthor (authorId: number, PostId: number): Promise<boole
         return false;
     }   
 }
+

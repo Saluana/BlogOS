@@ -3,7 +3,7 @@ import { NewPost, ErrorMessage, JWTPayload } from "../models/types/types";
 import * as posts from "../models/posts";
 import { authenticate } from "../middleware/authenticate";
 import {filterNewPostReq, filterUpdatePostReq} from "../scripts/requestFilters";
-import {isAuthor} from "../scripts/requestChecks";
+import {isAuthorOfPost} from "../scripts/requestChecks";
 
 //Create a new post
 router.post("/new-post", authenticate, async (req, res) => {
@@ -63,12 +63,10 @@ router.get("/", async (req, res) => {
     const start: number = (Number(page) - 1) * Number(limit);
     const end: number = Number(page) * Number(limit);
     
-    try {
-        const rangeOfPosts = await posts.getRangeOfPosts(start, end);
-        return res.status(200).json(rangeOfPosts);
-    } catch (err) {
-        return res.status(500).send(err);
-    }
+
+    const rangeOfPosts = await posts.getRangeOfPosts(start, end);
+    if (typeof rangeOfPosts === "string") return res.status(400).send(rangeOfPosts);
+    return res.status(200).json(rangeOfPosts);
 });
 
 //Edit post
@@ -76,7 +74,7 @@ router.put("/id/:id", authenticate, async (req, res) => {
     const id = Number(req.params.id);
     if (isNaN(id)) return res.status(400).send("Invalid id.");
 
-    const didAuthorPost = await isAuthor(req.user.id, id);
+    const didAuthorPost = await isAuthorOfPost(req.user.id, id);
     if (!didAuthorPost) return res.status(403).send("You do not have permission to edit this post.");
 
     const post = filterUpdatePostReq(req.body);
@@ -98,13 +96,13 @@ router.delete("/id/:id", authenticate, async (req, res) => {
     const id = Number(req.params.id);
     if (isNaN(id)) return res.status(400).send("Invalid id.");
 
-    const didAuthorPost: boolean = await isAuthor(req.user.id, id);
+    const didAuthorPost: boolean = await isAuthorOfPost(req.user.id, id);
     if (!didAuthorPost && req.user.roles != ("admin" || "editor")) return res.status(403).send("You do not have permission to delete this post.");
 
     try {
         const deletedPost = await posts.deletePost(id);
         return res.status(200).json(deletedPost);
-    } catch (err) {
+    } catch (err: unknown) {
         return res.status(500).send(err);
     }
 })

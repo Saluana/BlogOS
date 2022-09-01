@@ -4,7 +4,15 @@ import bcrypt from 'bcrypt';
 import JWT from 'jsonwebtoken';
 import validator from 'validator';
 import { createAuthor, getAuthorByEmail } from '../models/authors';
+import {errorHandler} from '../scripts/errorHandler';
 
+interface PrismaError {
+    code: string;
+    meta: {
+        target: string[];
+    }
+    clientVersion: string;
+}
 
 function setPayload (author: Author): JWTPayload {
     let payload = author as JWTPayload;
@@ -31,8 +39,8 @@ router.post('/new-author', async (req, res) => {
         const token = JWT.sign(payload, process.env.JWT_SECRET as string, { expiresIn: '30d' });
         return res.status(200).json({ author, token });
     } catch (err) {
-        console.log(err)
-        return res.status(500).send(err);
+        let error = errorHandler(err);
+        return res.status(500).send(error);
     }
 
 })
