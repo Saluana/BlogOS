@@ -29,8 +29,10 @@ function setPayload (author: Author): JWTPayload {
     return payload
 }
 
+//Create an author
 router.post('/new-author', async (req, res) => {
     const { username, email, password } = req.body;
+    if (!username || !email || !password) return res.status(400).send("Missing required fields.");
 
     try {
         let author: Author | ErrorMessage = await createAuthor(username, email, password);
@@ -45,8 +47,10 @@ router.post('/new-author', async (req, res) => {
 
 })
 
+//Sign in
 router.post("/sign-in", async (req, res) => {
     const { email, password } = req.body;
+    if (!email || !password) return res.status(400).send("Missing required fields.");
     if (password.length < 6) return res.status(400).send("Password does not match."); //Change l8er
     if (!validator.isEmail(email)) return res.status(400).send("Invalid email.") //Change l8er
     let author: Author | ErrorMessage;

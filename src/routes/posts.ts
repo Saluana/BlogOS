@@ -6,7 +6,7 @@ import {filterNewPostReq, filterUpdatePostReq} from "../scripts/requestFilters";
 import {isAuthorOfPost} from "../scripts/requestChecks";
 
 //Create a new post
-router.post("/new-post", authenticate, async (req, res) => {
+router.post("/", authenticate, async (req, res) => {
     req.body.authorId = req.user.id;
     const newPost: NewPost | ErrorMessage = filterNewPostReq(req.body);
 
@@ -31,7 +31,7 @@ router.get("/all-posts", async (req, res) => {
 });
 
 //get post by link
-router.get("/:link", async (req, res) => {
+router.get("/link/:link", async (req, res) => {
 try {
     const post = await posts.getPostByLink(req.params.link);
     return res.status(200).json(post);
@@ -41,7 +41,7 @@ try {
 })
 
 //get post by id
-router.get("/id/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
     const id: number = Number(req.params.id);
     if (isNaN(id)) return res.status(400).send("Invalid id.");
 
@@ -70,7 +70,7 @@ router.get("/", async (req, res) => {
 });
 
 //Edit post
-router.put("/id/:id", authenticate, async (req, res) => {
+router.put("/:id", authenticate, async (req, res) => {
     const id = Number(req.params.id);
     if (isNaN(id)) return res.status(400).send("Invalid id.");
 
@@ -92,7 +92,7 @@ router.put("/id/:id", authenticate, async (req, res) => {
 })
 
 //Delete post
-router.delete("/id/:id", authenticate, async (req, res) => {
+router.delete("/:id", authenticate, async (req, res) => {
     const id = Number(req.params.id);
     if (isNaN(id)) return res.status(400).send("Invalid id.");
 
