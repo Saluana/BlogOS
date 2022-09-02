@@ -27,25 +27,22 @@ async function updateSettings (settings: SiteSettings): Promise<SiteSettings | E
 
     const updatedSettings = await prisma.settings.update({
         where: {
-            email: settings.email
+            email: oldSettings.email
         },
-        data: {
-            title: settings.title || oldSettings.title,
-            description: settings.description || oldSettings.description,
-            url: settings.url || oldSettings.url,
-            email: settings.email || oldSettings.email,
-            timezone: settings.timezone || oldSettings.timezone,
-            language: settings.language || oldSettings.language,
-            dateFormat: settings.dateFormat || oldSettings.dateFormat,
-            postsPerPage: settings.postsPerPage || oldSettings.postsPerPage
-        }
+        data: settings
     })
 
     return updatedSettings as SiteSettings || "Error updating site." as ErrorMessage
 }
 
-export default {
+async function getSiteCount (): Promise<number> {
+    const siteCount = await prisma.settings.count()
+    return siteCount ? siteCount : 0
+}
+
+export {
     createSite,
     getSite,
-    updateSettings
+    updateSettings,
+    getSiteCount
 }

@@ -1,22 +1,24 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 import {Page, ErrorMessage} from './types/types';
+import {stringToLink} from '../scripts/parsers'
 
 async function createPage (page: Page): Promise<Page | ErrorMessage> {
+
+    if (!page.title) return "Page title is required." as ErrorMessage
     const existingPage = await prisma.page.findFirst({
         where: {
-            link: page.link
+            link: page.link || stringToLink(page.title)
         }
     })
 
     if (existingPage) return "Page with that link already exists." as ErrorMessage
-    if (!page.title) return "Page title is required." as ErrorMessage
     if (!page.authorId) return "Page author id is required." as ErrorMessage
 
     const newPage = await prisma.page.create({
         data: {
             title: page.title,
-            link: page.link || page.title.replace(/\s/g, '-'),
+            link: page.link || stringToLink(page.title),
             content: page.content || "",
             authorId: page.authorId,
             status: page.status || "draft",

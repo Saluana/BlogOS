@@ -11,6 +11,8 @@ router.post("/", authenticate, async (req, res) => {
     const newPost: NewPost | ErrorMessage = filterNewPostReq(req.body);
 
     if (typeof newPost === "string") return res.status(400).send(newPost);
+    if (!newPost.hasOwnProperty('title')) return res.status(400).send("Title is required.");
+    if (!newPost.hasOwnProperty('categoryId')) return res.status(400).send("Category is required.");
 
     try {
         const post = await posts.createPost(newPost as NewPost);

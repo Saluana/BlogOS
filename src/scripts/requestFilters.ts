@@ -1,4 +1,4 @@
-import {NewPost, Post, ErrorMessage, Category} from '../models/types/types';
+import {NewPost, Post, ErrorMessage, Category, SiteSettings, Page} from '../models/types/types';
 
 /* --- POST FILTERS --- */
 //Filter requests for new posts
@@ -10,8 +10,6 @@ export function filterNewPostReq(requestBody: object): NewPost | ErrorMessage {
             filteredBody[key as keyof object] = requestBody[key as keyof object];
         }
     })
-    if (!filteredBody.hasOwnProperty('title')) return "Title is required.";
-    if (!filteredBody.hasOwnProperty('categoryId')) return "Category is required.";
 
     return filteredBody ? filteredBody as NewPost : "Invalid post." as ErrorMessage;
 }
@@ -38,4 +36,31 @@ export function filterNewCategoryReq(requestBody: object): Category | ErrorMessa
     if (!filteredBody.hasOwnProperty('title')) return "Title is required.";
 
     return filteredBody ? filteredBody as Category : "Invalid category." as ErrorMessage;
+}
+
+/* --- SITE SETTINGS FILTERS --- */
+export function filterSettingsReq(requestBody: object): SiteSettings | ErrorMessage {
+    const allowedKeys = ['title', 'description', 'url', 'email', 'timezone', 'language', 'dateFormat', 'postsPerPage'];
+    const filteredBody = {};
+    Object.keys(requestBody).forEach(key => {
+        if (allowedKeys.includes(key)) {
+            filteredBody[key as keyof object] = requestBody[key as keyof object];
+        }
+    })
+    if (!filteredBody.hasOwnProperty('title')) return "Title is required.";
+
+    return filteredBody ? filteredBody as SiteSettings : "Invalid site settings." as ErrorMessage;
+}
+
+/* --- PAGE FILTERS --- */
+export function filterPageReq(requestBody: object): Page | ErrorMessage {
+    const allowedKeys = ['link', 'title', 'content', 'featuredImageUrl', 'menuOrder', 'meta'];
+    const filteredBody = {};
+    Object.keys(requestBody).forEach(key => {
+        if (allowedKeys.includes(key)) {
+            filteredBody[key as keyof object] = requestBody[key as keyof object];
+        }
+    })
+
+    return filteredBody ? filteredBody as Page : "Invalid page." as ErrorMessage;
 }

@@ -77,7 +77,7 @@ export interface SiteSettings {
     title?: string
     description?: string
     url?: string
-    email: string
+    email?: string
     timezone?: string
     language?: string
     dateFormat?: string

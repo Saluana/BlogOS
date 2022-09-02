@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 import { Post, NewPost, ErrorMessage, PostId} from './types/types'
+import {stringToLink} from '../scripts/parsers'
 
 async function getAllPosts (): Promise<Post[] | ErrorMessage> {
     let allPosts = await prisma.post.findMany()
@@ -49,6 +50,24 @@ async function createPost (post: NewPost): Promise<NewPost | ErrorMessage> {
         return "Category id is required"
     }
 
+    //check if post with same link or title already exists
+    const existingPost = await prisma.post.findFirst({
+        where: {
+            OR: [
+                {
+                    link: post.link || stringToLink(post.title)
+                },
+                {
+                    title: post.title
+                }
+            ]
+        }
+    })
+
+    if (existingPost) {
+        return "Post with that title or link already exists"
+    }
+
 const newPost = await prisma.post.create({
     data: {
         title: post.title,
@@ -57,7 +76,7 @@ const newPost = await prisma.post.create({
         authorId: post.authorId,
         categoryId: post.categoryId,
         tags: post.tags || [],
-        link: post.link || post.title.replace(/\s/g, '-'),
+        link: post.link || stringToLink(post.title),
         featuredImageUrl: post.featuredImageUrl || "",
         status: post.status || "draft",
     }
